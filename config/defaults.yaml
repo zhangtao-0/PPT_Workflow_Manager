@@ -1,0 +1,22 @@
+# 全局默认配置（ADR-002 分层：builtin 之下的第一层文件默认值）
+# 越靠后的层级优先级越高，本文件是「全局 defaults」层。
+
+queue:
+  concurrency: 1          # V1 默认单并发
+
+retry:
+  transport: 3            # 传输类重试
+  quality: 2              # 质量类重试
+  max_attempts: 2
+
+chatgpt:
+  conversation_mode: isolated   # continue | isolated | batch
+
+download:
+  output_dir: ""          # 空 = 走项目默认目录
+
+task:
+  timeout: 600            # 秒
+
+debug: false
+dry_run: false
