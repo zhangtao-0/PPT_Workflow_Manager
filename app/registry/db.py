@@ -252,6 +252,20 @@ class WorkflowDB:
         ).fetchall()
         return {r["status"]: r["n"] for r in rows}
 
+    def list_tasks(self, status: str | None = None) -> list[dict[str, Any]]:
+        """列出任务（可按状态过滤）。"""
+        conn = self._conn_for_thread()
+        if status:
+            rows = conn.execute(
+                "SELECT * FROM tasks WHERE status=? ORDER BY priority DESC, task_id ASC",
+                (status,),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM tasks ORDER BY priority DESC, task_id ASC"
+            ).fetchall()
+        return [dict(r) for r in rows]
+
     # -- rebuild ----------------------------------------------------------
     def rebuild_index(self, facts: dict[str, Any]) -> None:
         """从 Manifest 重建 Operational Index 的占位实现。
