@@ -111,6 +111,21 @@ class ArtifactRegistry:
                 return Artifact.model_validate(r)
         return None
 
+    def find_by_hash(self, sha256: str) -> list[Artifact]:
+        """按 sha256 查找已登记的 accepted Artifact（C5：防 Work 重复生成）。
+
+        用于 Work Handoff（§12.2）阶段判断「某内容是否已存在」。
+        """
+        return [
+            Artifact.model_validate(r)
+            for r in self._records
+            if r.get("sha256") == sha256
+            and r.get("status") == ArtifactStatus.ACCEPTED.value
+        ]
+
+    def has_hash(self, sha256: str) -> bool:
+        return bool(self.find_by_hash(sha256))
+
     # -- 版本化 -----------------------------------------------------------
     def supersede(self, artifact_id: str, reason: str = "") -> None:
         """把指定 Artifact 标记为 superseded，不删除记录、不覆盖旧文件（§11.2）。"""
