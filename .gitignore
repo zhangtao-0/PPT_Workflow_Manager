@@ -30,3 +30,6 @@ config/local.yaml
 # 系统
 .DS_Store
 Thumbs.db
+
+# WorkBuddy 项目数据（不提交）
+.workbuddy/
