@@ -169,7 +169,7 @@ class WorkflowDB:
                 (_iso(utcnow()), task_id),
             )
             conn.execute(
-                "INSERT INTO task_locks(task_id, locked_at) VALUES(?,?)",
+                "INSERT OR REPLACE INTO task_locks(task_id, locked_at) VALUES(?,?)",
                 (task_id, _iso(utcnow())),
             )
             conn.commit()

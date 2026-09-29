@@ -10,8 +10,8 @@ V1 只做 CLI，命令对齐 ADR-003：
     pwm rollback project_A --to 07B   # A9 接入
     pwm inspect TASK_0012
 
-Phase A 严禁连接真实 ChatGPT：run 使用注入的 Executor（默认 EchoExecutor，
-A10 用 FakeAdapter 替代做 Stage 00→07B 全链路）。
+Phase A 严禁连接真实 ChatGPT：run 使用注入的 Executor（默认 FakeAdapter，
+不访问网页）。
 """
 
 from __future__ import annotations
@@ -21,18 +21,12 @@ import os
 import sys
 from pathlib import Path
 
+from app.adapters.fake import FakeAdapter
 from app.queue.queue import TaskQueue
 from app.registry.db import WorkflowDB
-from app.workflow.models import Task, TaskState
+from app.workflow.models import TaskState
 from app.workflow.project import ProjectManager
-from app.workflow.worker import ExecutionResult, Executor, Worker
-
-
-class EchoExecutor:
-    """Phase A 占位执行器：任何任务直接标为完成。A10 由 FakeAdapter 替代。"""
-
-    def execute(self, task: Task) -> ExecutionResult:
-        return ExecutionResult(ok=True)
+from app.workflow.worker import Executor, Worker
 
 
 def default_projects_root() -> Path:
@@ -59,7 +53,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     if not pm.exists(args.project_id):
         print(f"项目不存在：{args.project_id}", file=sys.stderr)
         return 1
-    executor: Executor = args.executor_factory()
+    # Phase A：默认 FakeAdapter（不连真实 ChatGPT），输出到项目 artifacts 目录
+    executor: Executor = FakeAdapter(
+        output_dir=args.projects_root / args.project_id / "artifacts"
+    )
     db = _open_db(args.projects_root, args.project_id)
     queue = TaskQueue(db)
     worker = Worker(queue, executor)
@@ -208,9 +205,6 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.projects_root is None:
         args.projects_root = default_projects_root()
-
-    # executor 工厂：Phase A 默认 EchoExecutor
-    args.executor_factory = lambda: EchoExecutor()
 
     handlers = {
         "project": cmd_project_create,
