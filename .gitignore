@@ -23,6 +23,7 @@ projects/*/
 
 # 环境
 .env
+config/local.yaml
 .idea/
 .vscode/
 
