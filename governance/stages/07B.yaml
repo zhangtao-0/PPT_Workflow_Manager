@@ -1,0 +1,38 @@
+# Stage 07B 机器可读定义（示例，源自设计方案 §14）
+# 完整 Stage 00-10 的 YAML 规范详见《Stage Definition YAML 规范》（Phase E 产出）
+
+id: "07B"
+name: independent_hd_asset_production
+prerequisites:
+  - stage: "07A"
+    gate: passed
+executor: chatgpt_image
+scope: object
+queue:
+  ordering: sequence_asc
+  concurrency: 1
+inputs:
+  required:
+    - locked_object_spec
+    - page_visual
+    - visual_spec
+outputs:
+  required:
+    - object_png
+    - object_meta
+validators:
+  - filename_matches_object_id
+  - single_object_only
+  - alpha_rule
+  - no_index_label_in_pixels
+  - quality_minimum
+retry:
+  transport: 3
+  quality: 2
+rollback:
+  object_structure_error: "07A"
+  page_visual_error: "06"
+  page_identity_error: "04"
+on_page_complete:
+  - build_final_asset_manifest
+  - create_page_asset_zip

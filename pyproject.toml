@@ -1,0 +1,12 @@
+[project]
+name = "ppt-workflow-manager"
+version = "0.1.0"
+description = "PPT Workflow Manager V1 - 规范驱动的 PPT 全生命周期工作流管理器"
+requires-python = ">=3.13"
+
+[project.scripts]
+pwm = "app.ui.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

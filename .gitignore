@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# 项目工作区产物（每个项目的数据不入库，仅保留模板）
+projects/*/
+!projects/.gitkeep
+
+# 运行时生成
+*.sqlite
+*.db
+.state/
+*.log
+
+# 浏览器
+.user-data/
+.cdp/
+
+# 环境
+.env
+.idea/
+.vscode/
+
+# 系统
+.DS_Store
+Thumbs.db
